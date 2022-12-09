@@ -10,10 +10,10 @@ const { chains, provider } = configureChains(
   [chain.mainnet],
   [
     alchemyProvider({
-      apiKey: process.env.ALCHEMY_API!,
+      apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API!,
     }),
     infuraProvider({
-      apiKey: process.env.INFURA_API!,
+      apiKey: process.env.NEXT_PUBLIC_INFURA_API!,
     }),
   ]
 );

@@ -4,7 +4,7 @@ import wolfHowlLogo from '../public/img/wolf-howl-logo.png';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import config from '../contractConfig.json';
 import {
   useContractRead,
@@ -20,7 +20,8 @@ const lycanContractConfig = {
 
 const Home: NextPage = () => {
   const { isConnected } = useAccount();
-  const [mintQuantity, setMintQuantity] = useState<number>(1);
+  const [mintQuantity, setMintQuantity] = useState(0);
+  const [totalMinted, setTotalMinted] = useState(0);
   const [mintLoading, setMintLoading] = useState(false);
   const [mintSuccess, setMintSuccess] = useState(false);
   const [freeMintLoading, setFreeMintLoading] = useState(false);
@@ -30,11 +31,11 @@ const Home: NextPage = () => {
     ...lycanContractConfig,
     functionName: '_MAX_SUPPLY',
   });
-  const { data: claimedSupply } = useContractRead({
+  const { data: totalSupplyData } = useContractRead({
     ...lycanContractConfig,
     functionName: 'totalSupply',
-    watch: true,
   });
+
   const { data: mintCost } = useContractRead({
     ...lycanContractConfig,
     functionName: 'PRICE_PER_MINT',
@@ -133,12 +134,12 @@ const Home: NextPage = () => {
           </h1>
           {/* Rainbowkit Connect Button */}
           <ConnectButton
-            label="Connect"
-            chainStatus="icon"
+            label="Web3 Connect"
+            chainStatus="none"
             showBalance={false}
             accountStatus={{
-              smallScreen: 'avatar',
-              largeScreen: 'address',
+              smallScreen: 'address',
+              largeScreen: 'full',
             }}
           />
         </header>
@@ -158,7 +159,7 @@ const Home: NextPage = () => {
           {/* Dynamic NFT Counter */}
           <p className="mt-10 pt-4 text-xl text-red-600/70">
             <>
-              {claimedSupply?.toString()} / {maxSupply?.toString()} Lycans have
+              {totalMinted?.toString()} / {maxSupply?.toString()} Lycans have
               joined The Pack
             </>
           </p>
