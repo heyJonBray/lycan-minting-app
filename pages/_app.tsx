@@ -8,18 +8,15 @@ import { infuraProvider } from 'wagmi/providers/infura';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { publicProvider } from 'wagmi/providers/public';
 
-const alchemyAPI = process.env.ALCHEMY_API;
-const infuraAPI = process.env.INFURA_API;
-const mainnet = chain.mainnet;
 const { chains, provider } = configureChains(
-  [mainnet],
+  [chain.mainnet],
   [
     alchemyProvider({
-      apiKey: alchemyAPI!,
+      apiKey: process.env.ALCHEMY_API!,
       priority: 0,
     }),
     infuraProvider({
-      apiKey: infuraAPI!,
+      apiKey: process.env.INFURA_API!,
       priority: 1,
     }),
     publicProvider({ priority: 2 }),
