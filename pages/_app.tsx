@@ -13,7 +13,7 @@ const { chains, provider } = configureChains(
       apiKey: process.env.ALCHEMY_API!,
     }),
     infuraProvider({
-      apiKey: process.env.INFURA_SECRET_KEY!,
+      apiKey: process.env.INFURA_API!,
     }),
   ]
 );
