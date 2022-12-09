@@ -18,7 +18,6 @@ const { chains, provider } = configureChains(
       apiKey: process.env.INFURA_API!,
       priority: 1,
     }),
-    publicProvider({ priority: 2 }),
   ]
 );
 
