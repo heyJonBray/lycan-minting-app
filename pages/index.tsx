@@ -4,8 +4,7 @@ import wolfHowlLogo from '../public/img/wolf-howl-logo.png';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { BigNumber, ethers } from 'ethers';
+import { useState } from 'react';
 import config from '../contractConfig.json';
 import {
   useContractRead,
