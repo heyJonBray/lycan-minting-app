@@ -135,11 +135,11 @@ const Home: NextPage = () => {
           {/* Rainbowkit Connect Button */}
           <ConnectButton
             label="Web3 Connect"
-            chainStatus="none"
+            chainStatus="icon"
             showBalance={false}
             accountStatus={{
-              smallScreen: 'address',
-              largeScreen: 'full',
+              smallScreen: 'avatar',
+              largeScreen: 'address',
             }}
           />
         </header>

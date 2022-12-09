@@ -5,16 +5,19 @@ import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { infuraProvider } from 'wagmi/providers/infura';
+import { publicProvider } from 'wagmi/providers/public';
 
 const { chains, provider } = configureChains(
   [chain.mainnet],
   [
-    alchemyProvider({
-      apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API!,
-    }),
-    infuraProvider({
-      apiKey: process.env.NEXT_PUBLIC_INFURA_API!,
-    }),
+    // COMMENTED OUT TO PREVENT RATE LIMIT ON PRODUCTION APP
+    // alchemyProvider({
+    //   apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API!,
+    // }),
+    // infuraProvider({
+    //   apiKey: process.env.NEXT_PUBLIC_INFURA_API!,
+    // }),
+    publicProvider(),
   ]
 );
 
