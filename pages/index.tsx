@@ -31,10 +31,14 @@ const Home: NextPage = () => {
     ...lycanContractConfig,
     functionName: '_MAX_SUPPLY',
   });
-  const { data: totalSupplyData } = useContractRead({
-    ...lycanContractConfig,
-    functionName: 'totalSupply',
-  });
+
+  useEffect(() => {
+    const { data: totalSupplyData } = useContractRead({
+      ...lycanContractConfig,
+      functionName: 'totalSupply',
+    });
+    return () => setTotalMinted(totalSupplyData);
+  }, [totalMinted]);
 
   const { data: mintCost } = useContractRead({
     ...lycanContractConfig,
@@ -159,7 +163,7 @@ const Home: NextPage = () => {
           {/* Dynamic NFT Counter */}
           <p className="mt-10 pt-4 text-xl text-red-600/70">
             <>
-              {totalMinted?.toString()} / {maxSupply?.toString()} Lycans have
+              {totalMinted.toString()} / {maxSupply?.toString()} Lycans have
               joined The Pack
             </>
           </p>
