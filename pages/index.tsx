@@ -12,6 +12,7 @@ import {
   usePrepareContractWrite,
   useAccount,
 } from 'wagmi';
+import { BigNumber, ethers } from 'ethers';
 
 const lycanContractConfig = {
   address: config.address,
@@ -19,72 +20,50 @@ const lycanContractConfig = {
 };
 
 const Home: NextPage = () => {
-  const { isConnected } = useAccount();
-  const [mintQuantity, setMintQuantity] = useState(0);
-  const [totalMinted, setTotalMinted] = useState(0);
-  const [mintLoading, setMintLoading] = useState(false);
-  const [mintSuccess, setMintSuccess] = useState(false);
-  const [freeMintLoading, setFreeMintLoading] = useState(false);
-  const [freeMintSuccess, setFreeMintSuccess] = useState(false);
+  const { address, isConnected } = useAccount();
+  const [mintQuantity, setMintQuantity] = useState<number>(1);
+  const [mintCost, setMintCost] = useState<BigNumber>();
+  // const [maxSupply, setMaxSupply] = useState(0);
+  // const [mintLoading, setMintLoading] = useState(false);
+  // const [mintSuccess, setMintSuccess] = useState(false);
+  // const [freeMintLoading, setFreeMintLoading] = useState(false);
+  // const [freeMintSuccess, setFreeMintSuccess] = useState(false);
+
+  const mintCostEth = () => {
+    const costWei = mintQuantity * 66000000000000000;
+    const costEth = ethers.utils.formatEther(BigNumber.from(costWei));
+    setMintCost(BigNumber.from(costEth));
+  };
 
   const { data: maxSupply } = useContractRead({
     ...lycanContractConfig,
     functionName: '_MAX_SUPPLY',
   });
 
-  useEffect(() => {
-    const { data: totalSupplyData } = useContractRead({
-      ...lycanContractConfig,
-      functionName: 'totalSupply',
-    });
-    return () => setTotalMinted(totalSupplyData);
-  }, [totalMinted]);
-
-  const { data: mintCost } = useContractRead({
+  const { data: totalSupply } = useContractRead({
     ...lycanContractConfig,
-    functionName: 'PRICE_PER_MINT',
+    functionName: 'totalSupply',
   });
 
-  const { config: mint } = usePrepareContractWrite({
+  // const { data: mintCostWei } = useContractRead({
+  //   ...lycanContractConfig,
+  //   functionName: 'PRICE_PER_MINT',
+  // });
+
+  const { config: publicMint } = usePrepareContractWrite({
     ...lycanContractConfig,
     functionName: 'mint',
-    args: [mintQuantity],
+    args: [mintCost, mintQuantity],
   });
 
-  const { config: freeMint } = usePrepareContractWrite({
+  const { config: allowListMint } = usePrepareContractWrite({
     ...lycanContractConfig,
     functionName: 'freeMint',
   });
 
-  const { write: useMint } = useContractWrite(mint);
+  const { write: usePublicMint } = useContractWrite(publicMint);
 
-  const onMintClick = async () => {
-    setMintSuccess(false);
-    setMintLoading(false);
-    try {
-      await useMint?.();
-      setMintSuccess(true);
-    } catch (err) {
-      console.error('Mint Error: ', err);
-    } finally {
-      setMintLoading(false);
-    }
-  };
-
-  const { write: useFreeMint } = useContractWrite(freeMint);
-
-  const onFreeMintClick = async () => {
-    setFreeMintSuccess(false);
-    setFreeMintLoading(false);
-    try {
-      await useFreeMint?.();
-      setFreeMintSuccess(true);
-    } catch (err) {
-      console.error('Free Mint Error: ', err);
-    } finally {
-      setFreeMintLoading(false);
-    }
-  };
+  const { write: useAllowListMint } = useContractWrite(allowListMint);
 
   const handleDecrement = () => {
     if (mintQuantity <= 1) return;
@@ -138,12 +117,12 @@ const Home: NextPage = () => {
           </h1>
           {/* Rainbowkit Connect Button */}
           <ConnectButton
-            label="Web3 Connect"
-            chainStatus="none"
+            label="Web3 Login"
+            chainStatus="icon"
             showBalance={false}
             accountStatus={{
-              smallScreen: 'address',
-              largeScreen: 'full',
+              smallScreen: 'avatar',
+              largeScreen: 'address',
             }}
           />
         </header>
@@ -163,7 +142,7 @@ const Home: NextPage = () => {
           {/* Dynamic NFT Counter */}
           <p className="mt-10 pt-4 text-xl text-red-600/70">
             <>
-              {totalMinted.toString()} / {maxSupply?.toString()} Lycans have
+              {totalSupply?.toString()} / {maxSupply?.toString()} Lycans have
               joined The Pack
             </>
           </p>
@@ -174,8 +153,7 @@ const Home: NextPage = () => {
             {/* Mint Button */}
             <div className="flex-1 w-1/2 pr-5">
               <button
-                disabled={mintLoading}
-                onClick={onMintClick}
+                onClick={() => usePublicMint}
                 className="border-2 border-gray-600 mt-1 h-16 w-full bg-red-600/70 text-white font-bold rounded-full disabled:bg-gray-400"
               >
                 <span className="font-bold">Mint NFT</span>
@@ -209,8 +187,7 @@ const Home: NextPage = () => {
             {/* Free Mint Button */}
             <div className="flex-1 pl-5">
               <button
-                disabled={freeMintLoading}
-                onClick={onFreeMintClick}
+                onClick={() => useAllowListMint}
                 className="border-2 border-gray-600 mt-1 h-16 w-full bg-red-600/70 text-white font-bold rounded-full disabled:bg-gray-400"
               >
                 <span className="font-bold">Free Mint (Allow List)</span>
