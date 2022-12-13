@@ -55,24 +55,30 @@ const Home: NextPage = () => {
   //   setTotalSupply(useTotalSupply);
   // };
 
-  // const handlePublicMint = () => {
-  //   if (!isConnected) return null;
-  //   const { config: publicMint } = usePrepareContractWrite({
-  //     ...lycanContractConfig,
-  //     functionName: 'mint',
-  //     args: [mintCost, mintQuantity],
-  //   });
-  //   const { write: usePublicMint } = useContractWrite(publicMint);
-  // };
+  const handlePublicMint = async () => {
+    const { config: publicMint } = usePrepareContractWrite({
+      ...lycanContractConfig,
+      functionName: 'mint',
+      args: [mintCost, mintQuantity],
+    });
+    try {
+      await useContractWrite(publicMint);
+    } catch (err) {
+      console.log('Mint Error: ', err);
+    }
+  };
 
-  // const handleFreeMint = () => {
-  //   if (!isConnected) return null;
-  //   const { config: allowListMint } = usePrepareContractWrite({
-  //     ...lycanContractConfig,
-  //     functionName: 'freeMint',
-  //   });
-  //   const { write: useAllowListMint } = useContractWrite(allowListMint);
-  // };
+  const handleFreeMint = async () => {
+    const { config: allowListMint } = usePrepareContractWrite({
+      ...lycanContractConfig,
+      functionName: 'freeMint',
+    });
+    try {
+      await useContractWrite(allowListMint);
+    } catch (err) {
+      console.log('Allow-List Mint Error: ');
+    }
+  };
 
   const { data: maxSupply } = useContractRead({
     ...lycanContractConfig,
@@ -89,20 +95,9 @@ const Home: NextPage = () => {
   //   functionName: 'PRICE_PER_MINT',
   // });
 
-  const { config: publicMint } = usePrepareContractWrite({
-    ...lycanContractConfig,
-    functionName: 'mint',
-    args: [mintCost, mintQuantity],
-  });
+  // const { writeAsync: usePublicMint } = useContractWrite(publicMint);
 
-  const { config: allowListMint } = usePrepareContractWrite({
-    ...lycanContractConfig,
-    functionName: 'freeMint',
-  });
-
-  const { write: usePublicMint } = useContractWrite(publicMint);
-
-  const { write: useAllowListMint } = useContractWrite(allowListMint);
+  // const { writeAsync: useAllowListMint } = useContractWrite(allowListMint);
 
   const handleDecrement = () => {
     if (mintQuantity <= 1) return;
@@ -203,7 +198,7 @@ const Home: NextPage = () => {
             <button
               disabled={!isConnected}
               onClick={() => {
-                calcMintCost(), usePublicMint;
+                calcMintCost(), handlePublicMint;
               }}
               className="border-2 border-gray-600 mt-1 h-16 w-full bg-red-600/70 text-white font-bold rounded-full disabled:bg-gray-400"
             >
@@ -246,7 +241,7 @@ const Home: NextPage = () => {
             {/* Free Mint Button */}
             <button
               disabled={!isConnected}
-              onClick={() => useAllowListMint}
+              onClick={() => handleFreeMint}
               className="border-2 border-gray-600 mt-1 h-16 w-full bg-red-600/70 text-white font-bold rounded-full disabled:bg-gray-400"
             >
               <span className="font-bold">Free Mint (Allow List)</span>
